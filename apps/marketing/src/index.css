@@ -1,5 +1,15 @@
 @import "@punchline-hq/ui/globals.css";
 
 :root {
-  background: #fff;
+  background: #fbfaff;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+}
+
+::selection {
+  background: #ddd6fe;
+  color: #4c1d95;
 }

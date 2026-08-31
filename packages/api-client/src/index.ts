@@ -1,7 +1,18 @@
 import type {
-  CreateRecordInput,
+  CreateJokeInput,
   DashboardDto,
-  RecordDto,
+  JokeDto,
+  PublicJokeDto,
+  ShareJokeResult,
+  UpdateJokeInput,
+} from '@punchline-hq/contracts'
+
+export type {
+  CreateJokeInput,
+  JokeDto,
+  JokeStatus,
+  PublicJokeDto,
+  UpdateJokeInput,
 } from '@punchline-hq/contracts'
 
 export type TokenProvider = () => Promise<string | null>
@@ -29,13 +40,43 @@ export function createApiClient(baseUrl: string, getToken: TokenProvider) {
     return response.json() as Promise<T>
   }
 
+  async function publicRequest<T>(path: string): Promise<T> {
+    const response = await fetch(`${baseUrl}${path}`)
+    if (!response.ok) {
+      throw new Error(
+        response.status === 404
+          ? 'This share link is unavailable.'
+          : 'Unable to load joke.',
+      )
+    }
+    return response.json() as Promise<T>
+  }
+
   return {
     dashboard: () => request<DashboardDto>('/v1/dashboard'),
-    records: () => request<RecordDto[]>('/v1/records'),
-    createRecord: (input: CreateRecordInput) =>
-      request<RecordDto>('/v1/records', {
+    jokes: () => request<JokeDto[]>('/v1/jokes'),
+    joke: (id: string) => request<JokeDto>(`/v1/jokes/${id}`),
+    createJoke: (input: CreateJokeInput) =>
+      request<JokeDto>('/v1/jokes', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
+    updateJoke: (id: string, input: UpdateJokeInput) =>
+      request<JokeDto>(`/v1/jokes/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(input),
+      }),
+    shareJoke: (id: string) =>
+      request<ShareJokeResult>(`/v1/jokes/${id}/share`, {
+        method: 'POST',
+      }),
+    revokeShare: (id: string) =>
+      request<JokeDto>(`/v1/jokes/${id}/share`, { method: 'DELETE' }),
+    archiveJoke: (id: string) =>
+      request<JokeDto>(`/v1/jokes/${id}/archive`, { method: 'POST' }),
+    publicJoke: (token: string) =>
+      publicRequest<PublicJokeDto>(`/public/v1/jokes/${token}`),
   }
 }
+
+export type ApiClient = ReturnType<typeof createApiClient>

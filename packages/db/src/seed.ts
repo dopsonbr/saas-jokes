@@ -1,20 +1,32 @@
 import 'dotenv/config'
 import { createDb } from './index'
-import { records } from './schema'
+import { jokes } from './schema'
 
 if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required')
+
 const db = createDb(process.env.DATABASE_URL)
-await db.insert(records).values([
-  { title: 'Connect the first real data source', status: 'active', value: 32 },
+await db.insert(jokes).values([
   {
-    title: 'Replace starter records with domain entities',
-    status: 'active',
-    value: 68,
+    title: 'The alignment meeting',
+    setup: 'Why did the roadmap attend the all-hands?',
+    punchline: 'It needed more alignment.',
+    tags: ['workplace', 'strategy'],
+    createdByUserId: 'seed',
   },
   {
-    title: 'Verify isolated customer deployment',
-    status: 'completed',
-    value: 100,
+    title: 'Cloud migration',
+    setup: 'Why did the server move to the cloud?',
+    punchline: 'It needed some space to scale emotionally.',
+    tags: ['technology'],
+    createdByUserId: 'seed',
+  },
+  {
+    title: 'Quarterly forecast',
+    setup: 'Our forecast said the joke pipeline was healthy.',
+    punchline: 'Then legal asked to review the punchline.',
+    tags: ['finance', 'legal'],
+    createdByUserId: 'seed',
   },
 ])
+
 console.log('Seed complete')

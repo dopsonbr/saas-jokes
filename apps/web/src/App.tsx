@@ -1,7 +1,5 @@
-import { createApiClient } from '@punchline-hq/api-client'
 import {
   OrganizationSwitcher,
-  Show,
   SignInButton,
   SignUpButton,
   UserButton,
@@ -9,225 +7,135 @@ import {
 } from '@punchline-hq/auth/react'
 import { Button } from '@punchline-hq/ui/components/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@punchline-hq/ui/components/card'
-import { Input } from '@punchline-hq/ui/components/input'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Activity, CheckCircle2, Database, Plus, RefreshCw } from 'lucide-react'
-import { type FormEvent, type ReactNode, useState } from 'react'
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Link,
+  Outlet,
+  RouterProvider,
+} from '@tanstack/react-router'
+import { Laugh, LoaderCircle } from 'lucide-react'
+import { DashboardPage } from './pages/DashboardPage'
+import { EditJokePage, NewJokePage } from './pages/JokeEditorPage'
+import { SharedJokePage } from './pages/SharedJokePage'
 
-const apiUrl = import.meta.env.VITE_API_URL
-if (!apiUrl) throw new Error('Missing VITE_API_URL')
-
-function Dashboard() {
-  const { getToken } = useAuth()
-  const queryClient = useQueryClient()
-  const api = createApiClient(apiUrl, getToken)
-  const [title, setTitle] = useState('')
-  const [value, setValue] = useState('')
-
-  const dashboard = useQuery({
-    queryKey: ['dashboard'],
-    queryFn: api.dashboard,
-  })
-  const createRecord = useMutation({
-    mutationFn: api.createRecord,
-    onSuccess: async () => {
-      setTitle('')
-      setValue('')
-      await queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-    },
-  })
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault()
-    createRecord.mutate({ title, value: Number(value || 0) })
-  }
-
-  if (dashboard.isLoading)
-    return (
-      <State
-        icon={<RefreshCw className="animate-spin" />}
-        title="Loading customer data…"
-      />
-    )
-  if (dashboard.isError)
-    return (
-      <State
-        icon={<Activity />}
-        title="API unavailable"
-        detail={dashboard.error.message}
-      />
-    )
-  if (!dashboard.data)
-    return <State icon={<Activity />} title="No dashboard data returned" />
-  const data = dashboard.data
-  const metrics: Array<[string, string | number, typeof Activity]> = [
-    ['Total records', data.total, Database],
-    ['Active', data.active, Activity],
-    ['Completed', data.completed, CheckCircle2],
-    ['Total value', data.totalValue.toLocaleString(), Database],
-  ]
-
+function SignedOutWelcome() {
   return (
-    <>
-      <section className="grid gap-4 md:grid-cols-4">
-        {metrics.map(([label, metric, Icon]) => (
-          <Card key={String(label)}>
-            <CardHeader>
-              <CardDescription>{String(label)}</CardDescription>
-              <CardTitle className="flex items-center justify-between text-3xl">
-                <span>{String(metric)}</span>
-                <Icon className="h-5 w-5 text-slate-400" />
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        ))}
-      </section>
-
-      <section className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent records</CardTitle>
-            <CardDescription>
-              Example data-driven view loaded only from the dedicated API.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {data.recent.length === 0 ? (
-              <p className="text-sm text-slate-500">No records yet.</p>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {data.recent.map((record) => (
-                  <div
-                    key={record.id}
-                    className="flex items-center justify-between py-4"
-                  >
-                    <div>
-                      <div className="font-medium">{record.title}</div>
-                      <div className="text-xs text-slate-500">
-                        {record.status} ·{' '}
-                        {new Date(record.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="font-mono text-sm">{record.value}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Add a record</CardTitle>
-            <CardDescription>
-              Proves authenticated write → API → Neon.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={submit} className="space-y-3">
-              <Input
-                required
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <Input
-                type="number"
-                min="0"
-                placeholder="Value"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
-              <Button className="w-full" disabled={createRecord.isPending}>
-                <Plus className="mr-2 h-4 w-4" />
-                Create
-              </Button>
-              {createRecord.isError && (
-                <p className="text-sm text-red-600">
-                  {createRecord.error.message}
-                </p>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-      </section>
-    </>
-  )
-}
-
-function State({
-  icon,
-  title,
-  detail,
-}: {
-  icon: ReactNode
-  title: string
-  detail?: string
-}) {
-  return (
-    <div className="grid min-h-[50vh] place-items-center text-center">
-      <div>
-        <div className="mx-auto mb-3 grid h-10 w-10 place-items-center rounded-full bg-slate-100">
-          {icon}
+    <main className="grid min-h-screen place-items-center bg-[#f7f5ff] px-6 py-16">
+      <div className="max-w-xl text-center">
+        <div className="mx-auto mb-7 grid h-16 w-16 place-items-center rounded-2xl bg-violet-600 text-white shadow-xl shadow-violet-200">
+          <Laugh className="h-8 w-8" />
         </div>
-        <div className="font-medium">{title}</div>
-        {detail && (
-          <div className="mt-1 max-w-md text-sm text-slate-500">{detail}</div>
-        )}
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-600">
+          Punchline HQ
+        </p>
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+          Your team’s jokes, under control.
+        </h1>
+        <p className="mx-auto mt-5 max-w-lg text-lg leading-8 text-slate-600">
+          Sign in to build, review, publish, and revoke mission-critical
+          punchlines from your organization’s private workspace.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <SignInButton mode="modal">
+            <Button size="lg">Sign in</Button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <Button size="lg" variant="outline">
+              Create account
+            </Button>
+          </SignUpButton>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }
 
-export default function App() {
+function WorkspaceLayout() {
+  const { isLoaded, isSignedIn } = useAuth()
+  if (!isLoaded) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#f7f5ff] text-violet-600">
+        <LoaderCircle className="h-8 w-8 animate-spin" aria-label="Loading" />
+      </div>
+    )
+  }
+  if (!isSignedIn) return <SignedOutWelcome />
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div>
-            <div className="font-semibold">Customer Workspace</div>
-            <div className="text-xs text-slate-500">Isolated SaaS cell</div>
-          </div>
+    <div className="min-h-screen bg-[#f8f7fb] text-slate-950">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+          <Link
+            to="/"
+            className="flex items-center gap-3"
+            aria-label="Punchline HQ dashboard"
+          >
+            <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-600 text-white shadow-lg shadow-violet-200">
+              <Laugh className="h-5 w-5" />
+            </span>
+            <span>
+              <span className="block font-bold tracking-tight">
+                Punchline HQ
+              </span>
+              <span className="block text-xs text-slate-500">
+                Enterprise joke operations
+              </span>
+            </span>
+          </Link>
           <div className="flex items-center gap-3">
-            <Show when="signed-in">
-              <OrganizationSwitcher />
-              <UserButton />
-            </Show>
-            <Show when="signed-out">
-              <SignInButton>
-                <Button variant="outline">Sign in</Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button>Get started</Button>
-              </SignUpButton>
-            </Show>
+            <OrganizationSwitcher
+              hidePersonal
+              appearance={{ elements: { rootBox: 'hidden sm:block' } }}
+            />
+            <UserButton />
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-10">
-        <Show when="signed-in">
-          <Dashboard />
-        </Show>
-        <Show when="signed-out">
-          <div className="mx-auto max-w-2xl py-24 text-center">
-            <div className="mb-4 text-sm font-medium text-slate-500">
-              Dedicated customer application
-            </div>
-            <h1 className="text-4xl font-semibold tracking-tight">
-              Sign in to access your workspace.
-            </h1>
-            <p className="mt-4 text-slate-600">
-              Authentication is shared through Clerk; all business data remains
-              behind this customer's dedicated API and Neon database.
-            </p>
-          </div>
-        </Show>
-      </main>
+      <Outlet />
     </div>
   )
+}
+
+const rootRoute = createRootRoute({ component: Outlet })
+const workspaceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'workspace',
+  component: WorkspaceLayout,
+})
+const dashboardRoute = createRoute({
+  getParentRoute: () => workspaceRoute,
+  path: '/',
+  component: DashboardPage,
+})
+const newJokeRoute = createRoute({
+  getParentRoute: () => workspaceRoute,
+  path: '/jokes/new',
+  component: NewJokePage,
+})
+const editJokeRoute = createRoute({
+  getParentRoute: () => workspaceRoute,
+  path: '/jokes/$jokeId',
+  component: EditJokePage,
+})
+const sharedJokeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/share/$shareToken',
+  component: SharedJokePage,
+})
+
+const routeTree = rootRoute.addChildren([
+  workspaceRoute.addChildren([dashboardRoute, newJokeRoute, editJokeRoute]),
+  sharedJokeRoute,
+])
+const router = createRouter({ routeTree })
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+export default function App() {
+  return <RouterProvider router={router} />
 }

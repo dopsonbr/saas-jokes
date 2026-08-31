@@ -1,14 +1,21 @@
-import { createRecordInputSchema } from '@punchline-hq/contracts'
-import { createDb, schema } from '@punchline-hq/db'
+import type { CustomerAuthVariables } from '@punchline-hq/auth/server'
+import {
+  createJokeInputSchema,
+  jokeIdSchema,
+  shareTokenSchema,
+  updateJokeInputSchema,
+} from '@punchline-hq/contracts'
+import { createDb } from '@punchline-hq/db'
 import { createLogger } from '@punchline-hq/telemetry'
-import { desc, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { requireCustomerAuth } from './auth'
 import { env } from './env'
+import { createJokeService } from './joke-service'
 
-const app = new Hono()
+const app = new Hono<{ Variables: CustomerAuthVariables }>()
 const db = createDb(env.DATABASE_URL)
+const jokes = createJokeService(db, env.FRONTEND_URL)
 const log = createLogger({ service: 'api', customer_slug: env.CUSTOMER_SLUG })
 
 app.use(
@@ -16,73 +23,87 @@ app.use(
   cors({
     origin: env.FRONTEND_URL,
     allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
+    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   }),
 )
 
 app.get('/health', (c) => c.json({ ok: true, service: 'api' }))
+
+app.get('/public/v1/jokes/:shareToken', async (c) => {
+  const token = shareTokenSchema.safeParse(c.req.param('shareToken'))
+  if (!token.success) return c.json({ error: 'Not found' }, 404)
+  const joke = await jokes.publicByToken(token.data)
+  return joke ? c.json(joke) : c.json({ error: 'Not found' }, 404)
+})
+
 app.use('/v1/*', requireCustomerAuth)
 
-app.get('/v1/dashboard', async (c) => {
-  const started = Date.now()
-  const [totals] = await db
-    .select({
-      total: sql<number>`count(*)::int`,
-      active: sql<number>`count(*) filter (where ${schema.records.status} = 'active')::int`,
-      completed: sql<number>`count(*) filter (where ${schema.records.status} = 'completed')::int`,
-      totalValue: sql<number>`coalesce(sum(${schema.records.value}), 0)::int`,
-    })
-    .from(schema.records)
+app.get('/v1/dashboard', async (c) => c.json(await jokes.dashboard()))
+app.get('/v1/jokes', async (c) => c.json(await jokes.list()))
 
-  const recentRows = await db
-    .select()
-    .from(schema.records)
-    .orderBy(desc(schema.records.createdAt))
-    .limit(5)
-  log.info('dashboard.loaded', {
-    duration_ms: Date.now() - started,
-    row_count: recentRows.length,
-  })
-
-  return c.json({
-    total: totals?.total ?? 0,
-    active: totals?.active ?? 0,
-    completed: totals?.completed ?? 0,
-    totalValue: totals?.totalValue ?? 0,
-    recent: recentRows.map((r) => ({
-      ...r,
-      createdAt: r.createdAt.toISOString(),
-    })),
-  })
+app.get('/v1/jokes/:jokeId', async (c) => {
+  const id = jokeIdSchema.safeParse(c.req.param('jokeId'))
+  if (!id.success) return c.json({ error: 'Not found' }, 404)
+  const joke = await jokes.get(id.data)
+  return joke ? c.json(joke) : c.json({ error: 'Not found' }, 404)
 })
 
-app.get('/v1/records', async (c) => {
-  const rows = await db
-    .select()
-    .from(schema.records)
-    .orderBy(desc(schema.records.createdAt))
-  return c.json(
-    rows.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() })),
-  )
-})
-
-app.post('/v1/records', async (c) => {
-  const parsed = createRecordInputSchema.safeParse(
+app.post('/v1/jokes', async (c) => {
+  const parsed = createJokeInputSchema.safeParse(
     await c.req.json().catch(() => null),
   )
-  if (!parsed.success)
+  if (!parsed.success) {
     return c.json(
       { error: 'Invalid request', issues: parsed.error.flatten() },
       400,
     )
+  }
+  const created = await jokes.create(parsed.data, c.get('auth').userId)
+  log.info('joke.created', { joke_id: created.id })
+  return c.json(created, 201)
+})
 
-  const [created] = await db
-    .insert(schema.records)
-    .values(parsed.data)
-    .returning()
-  if (!created) return c.json({ error: 'Insert failed' }, 500)
-  log.info('record.created', { record_id: created.id })
-  return c.json({ ...created, createdAt: created.createdAt.toISOString() }, 201)
+app.patch('/v1/jokes/:jokeId', async (c) => {
+  const id = jokeIdSchema.safeParse(c.req.param('jokeId'))
+  const parsed = updateJokeInputSchema.safeParse(
+    await c.req.json().catch(() => null),
+  )
+  if (!id.success) return c.json({ error: 'Not found' }, 404)
+  if (!parsed.success) {
+    return c.json(
+      { error: 'Invalid request', issues: parsed.error.flatten() },
+      400,
+    )
+  }
+  const updated = await jokes.update(id.data, parsed.data)
+  return updated
+    ? c.json(updated)
+    : c.json({ error: 'Joke not found or archived' }, 404)
+})
+
+app.post('/v1/jokes/:jokeId/share', async (c) => {
+  const id = jokeIdSchema.safeParse(c.req.param('jokeId'))
+  if (!id.success) return c.json({ error: 'Not found' }, 404)
+  const shared = await jokes.share(id.data)
+  if (!shared) return c.json({ error: 'Joke not found or archived' }, 404)
+  log.info('joke.shared', { joke_id: id.data })
+  return c.json(shared)
+})
+
+app.delete('/v1/jokes/:jokeId/share', async (c) => {
+  const id = jokeIdSchema.safeParse(c.req.param('jokeId'))
+  if (!id.success) return c.json({ error: 'Not found' }, 404)
+  const joke = await jokes.revoke(id.data)
+  return joke
+    ? c.json(joke)
+    : c.json({ error: 'Joke not found or archived' }, 404)
+})
+
+app.post('/v1/jokes/:jokeId/archive', async (c) => {
+  const id = jokeIdSchema.safeParse(c.req.param('jokeId'))
+  if (!id.success) return c.json({ error: 'Not found' }, 404)
+  const joke = await jokes.archive(id.data)
+  return joke ? c.json(joke) : c.json({ error: 'Joke not found' }, 404)
 })
 
 app.onError((error, c) => {

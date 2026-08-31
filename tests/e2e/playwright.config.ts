@@ -6,14 +6,16 @@ import dotenv from 'dotenv'
 const here = path.dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: path.join(here, '.env.e2e.local') })
 
-const webUrl = process.env.E2E_WEB_URL ?? 'http://localhost:5173'
-const apiUrl = process.env.E2E_API_URL ?? 'http://localhost:3001'
+const webUrl = process.env.E2E_WEB_URL ?? 'http://localhost:5177'
+const apiUrl = process.env.E2E_API_URL ?? 'http://localhost:3101'
 const authFile = path.join(here, 'playwright/.auth/user.json')
+const desktopChrome = devices['Desktop Chrome'] ?? {}
 
 export default defineConfig({
   testDir: here,
   outputDir: path.join(here, 'playwright/test-results'),
   fullyParallel: false,
+  workers: 1,
   retries: 0,
   reporter: 'list',
   use: {
@@ -30,7 +32,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: 'pnpm --filter @punchline-hq/web dev',
+      command: 'pnpm --filter @punchline-hq/web dev:e2e',
       cwd: path.resolve(here, '../..'),
       url: webUrl,
       reuseExistingServer: true,
@@ -47,7 +49,7 @@ export default defineConfig({
       testMatch: /tests\/api\.spec\.ts/,
       dependencies: ['setup'],
       use: {
-        ...devices['Desktop Chrome']!,
+        ...desktopChrome,
         storageState: authFile,
       },
     },
@@ -56,7 +58,7 @@ export default defineConfig({
       testMatch: /tests\/web\.authenticated\.spec\.ts/,
       dependencies: ['setup'],
       use: {
-        ...devices['Desktop Chrome']!,
+        ...desktopChrome,
         storageState: authFile,
       },
     },
@@ -64,7 +66,7 @@ export default defineConfig({
       name: 'web-signed-out',
       testMatch: /tests\/web\.signed-out\.spec\.ts/,
       use: {
-        ...devices['Desktop Chrome']!,
+        ...desktopChrome,
         storageState: { cookies: [], origins: [] },
       },
     },

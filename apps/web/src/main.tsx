@@ -8,9 +8,14 @@ import './index.css'
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 if (!publishableKey) throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY')
 
-const queryClient = new QueryClient()
+const rootElement = document.getElementById('root')
+if (!rootElement) throw new Error('Missing root element')
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, staleTime: 15_000 } },
+})
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <AuthProvider publishableKey={publishableKey}>
       <QueryClientProvider client={queryClient}>

@@ -38,7 +38,9 @@ setup('authenticate the synthetic customer user', async ({ page }) => {
   }, expectedOrgId)
 
   await page.reload()
-  await expect(page.getByText('Recent records')).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: 'Joke portfolio' }),
+  ).toBeVisible()
   await fs.mkdir(path.dirname(authFile), { recursive: true })
   await page.context().storageState({ path: authFile })
 })

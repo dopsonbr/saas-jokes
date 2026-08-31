@@ -1,6 +1,6 @@
 # Punchline HQ
 
-Reusable starter for a B2B SaaS where **each customer gets an isolated React SPA, API deployment, and Neon Postgres project**. Authentication is shared through Clerk; operational telemetry and product analytics can flow to shared destinations.
+Punchline HQ is a deliberately contrived B2B SaaS used to evaluate the SaaS Cell Starter. Organization members build, save, publish, and revoke structured jokes from an isolated React SPA, Hono API, and Neon database cell. Authentication is shared through Clerk.
 
 ## Architecture
 
@@ -27,7 +27,7 @@ Reusable starter for a B2B SaaS where **each customer gets an isolated React SPA
                └──── shared telemetry ────┘
 ```
 
-There is **no control plane** and **no required CI pipeline** in this starter. Provisioning and release promotion are intentionally documented/manual until scale justifies automation.
+There is **no control plane** and **no required CI pipeline**. Provisioning and release promotion remain intentionally manual so this repository tests the starter's intended early-stage operating model.
 
 ## Stack
 
@@ -84,7 +84,6 @@ See [`AGENTS.md`](./AGENTS.md) and [`docs/architecture.md`](./docs/architecture.
 ```bash
 corepack enable
 pnpm install
-pnpm init:project -- --name "My Product" --slug my-product
 ```
 
 Then configure local environment files:
@@ -95,7 +94,7 @@ cp apps/api/.env.example apps/api/.env.local
 cp apps/marketing/.env.example apps/marketing/.env.local
 ```
 
-Create a Clerk application and organization, create a Neon project for your first customer, and populate the env files. The browser uses `VITE_CLERK_PUBLISHABLE_KEY`; the API uses `CLERK_PUBLISHABLE_KEY` plus the server-only `CLERK_SECRET_KEY` for explicit request verification.
+Configure a Clerk application and organization, create a Neon project for the customer cell, and populate the env files. The browser uses `VITE_CLERK_PUBLISHABLE_KEY`; the API uses `CLERK_PUBLISHABLE_KEY` plus the server-only `CLERK_SECRET_KEY` for explicit request verification.
 
 ## Development
 
@@ -127,7 +126,7 @@ pnpm --filter @punchline-hq/db db:migrate
 pnpm --filter @punchline-hq/db db:seed
 ```
 
-The sample domain is intentionally generic: `records`. Replace it when starting a real product rather than accumulating generic starter abstractions.
+The `jokes` schema stores structured setup/punchline content, lifecycle state, creator identity, tags, and revocable public-share tokens. It intentionally has no `tenant_id`; the deployment and database are the customer boundary.
 
 ## Vercel deployment model
 
@@ -167,17 +166,9 @@ The default deployment model uses Vercel project environment variables. Mark con
 
 See [`docs/secrets.md`](./docs/secrets.md) and ADR 0006.
 
-## Making this a reusable template
+## Evaluation provenance
 
-Recommended flow:
-
-1. Push this repository to GitHub.
-2. Mark it as a **Template repository**.
-3. Create a new repository from the template for each SaaS product.
-4. Run `pnpm init:project -- --name "..." --slug ...` once.
-5. Commit the renamed scaffold before product work starts.
-
-Do **not** create a separate source repo per customer. Customers are separate deployments of one product codebase.
+This repository retains the upstream starter history and an isolated initialization commit. Starter compatibility fixes and Punchline HQ product work are separate local commits. See [`docs/starter-evaluation.md`](./docs/starter-evaluation.md) for the scorecard and evidence.
 
 
 ## Shared auth and UI packages

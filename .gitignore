@@ -12,3 +12,6 @@ coverage/
 playwright/.auth/
 playwright/test-results/
 playwright-report/
+**/playwright/.auth/
+**/playwright/test-results/
+**/playwright-report/
