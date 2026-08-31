@@ -1,5 +1,6 @@
 node_modules/
 dist/
+**/dist/
 .vercel/
 .env
 .env.*
@@ -9,6 +10,7 @@ dist/
 coverage/
 *.log
 *.tsbuildinfo
+**/*.tsbuildinfo
 playwright/.auth/
 playwright/test-results/
 playwright-report/
