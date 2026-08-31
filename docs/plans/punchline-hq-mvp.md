@@ -43,13 +43,13 @@ A deployed evaluation product where a Clerk organization can build, save, publis
 
 ## Acceptance criteria
 
-- [ ] Clean frozen install and `pnpm check` pass.
-- [ ] API E2E proves authentication, wrong-org rejection, validation, persistence, publish, revoke, and archive.
-- [ ] Browser E2E proves the organization member workflow and signed-out public behavior.
-- [ ] Marketing and product routes are usable at mobile and desktop widths.
-- [ ] All three Vercel deployments are `READY` and representative runtime routes pass.
-- [ ] Evaluation scorecard distinguishes starter defects, product work, and synthetic versus deployed evidence.
+- [x] Clean frozen install and `pnpm check` pass.
+- [x] API E2E proves authentication, wrong-org rejection, validation, persistence, publish, revoke, and archive.
+- [x] Browser E2E proves the organization member workflow and signed-out public behavior.
+- [x] Marketing and product routes are usable at mobile and desktop widths.
+- [x] All three Vercel deployments are `READY` and representative runtime routes pass.
+- [x] Evaluation scorecard distinguishes starter defects, product work, and synthetic versus deployed evidence.
 
 ## Verification evidence
 
-Evidence is finalized in `docs/starter-evaluation.md` after local and deployed verification.
+Evidence is finalized in `docs/starter-evaluation.md`.

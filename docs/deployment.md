@@ -4,6 +4,12 @@
 
 From one repository, create:
 
+For direct CLI deployments, run from the repository root and name the already-configured project so Vercel receives the full monorepo before applying its Root Directory:
+
+```bash
+vercel deploy --prod --project <project-name>
+```
+
 ### Shared product project
 
 `<product>-marketing`
@@ -57,3 +63,13 @@ Vercel supplies function/runtime observability for Hono deployments. Configure a
 ## Secrets
 
 Vercel environment variables are the initial deployment injection mechanism. Confidential Preview/Production values should be marked Sensitive. Do not use production credentials for local development or E2E. See `docs/secrets.md` for classification, rotation, and the trigger for adopting a dedicated secrets manager.
+
+## Punchline HQ evaluation deployment
+
+| Project | Root | Stable URL |
+|---|---|---|
+| `punchline-hq-marketing` | `apps/marketing` | `https://punchline-hq-marketing.vercel.app` |
+| `punchline-hq-demo-web` | `apps/web` | `https://punchline-hq-demo-web.vercel.app` |
+| `punchline-hq-demo-api` | `apps/api` | `https://punchline-hq-demo-api.vercel.app` |
+
+This evaluation deliberately reuses the `Templates Preview` Clerk development application and the `templates-preview` Neon project. The organization and the `saas-jokes-demo` / `saas-jokes-e2e` branches are isolated synthetic fixtures, but this reuse is an evaluation-only exception to the dedicated-customer-resource invariant above.
