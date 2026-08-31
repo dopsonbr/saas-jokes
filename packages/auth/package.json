@@ -5,7 +5,10 @@
   "type": "module",
   "exports": {
     "./react": "./src/react.tsx",
-    "./server": "./src/server.ts",
+    "./server": {
+      "node": "./dist/server.js",
+      "default": "./src/server.ts"
+    },
     "./styles.css": "./src/styles.css"
   },
   "scripts": {
