@@ -1,0 +1,5 @@
+**/dist
+**/*.tsbuildinfo
+**/playwright/.auth
+**/playwright/test-results
+**/playwright-report
