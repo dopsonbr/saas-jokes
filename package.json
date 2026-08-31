@@ -1,5 +1,5 @@
 {
-  "name": "saas-cell-starter",
+  "name": "punchline-hq",
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel --filter './apps/**' dev",
@@ -7,10 +7,10 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
     "check": "pnpm typecheck && pnpm lint && pnpm build",
-    "e2e": "pnpm --filter @starter/e2e test",
-    "e2e:web": "pnpm --filter @starter/e2e test:web",
-    "e2e:api": "pnpm --filter @starter/e2e test:api",
-    "e2e:install": "pnpm --filter @starter/e2e install:browsers",
+    "e2e": "pnpm --filter @punchline-hq/e2e test",
+    "e2e:web": "pnpm --filter @punchline-hq/e2e test:web",
+    "e2e:api": "pnpm --filter @punchline-hq/e2e test:api",
+    "e2e:install": "pnpm --filter @punchline-hq/e2e install:browsers",
     "init:project": "node scripts/init-template.mjs"
   },
   "devDependencies": {

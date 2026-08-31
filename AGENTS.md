@@ -32,7 +32,7 @@ Clerk is shared identity. Telemetry/analytics may be shared only when they do no
 - TanStack Router for client routing.
 - TanStack Query for server state. Avoid putting API data into global client stores.
 - Reusable shadcn primitives live in `packages/ui`; do not create a second app-local primitive library.
-- Import Clerk browser APIs through `@starter/auth/react`, not directly from Clerk packages.
+- Import Clerk browser APIs through `@punchline-hq/auth/react`, not directly from Clerk packages.
 - Components should remain presentational when possible; data loading belongs in route/page hooks or feature hooks.
 - Prefer tables/charts/views driven by API DTOs rather than hard-coded demo data.
 
@@ -44,7 +44,7 @@ Clerk is shared identity. Telemetry/analytics may be shared only when they do no
 - Return explicit DTOs; never return Drizzle rows blindly.
 - Keep domain logic out of HTTP handlers once it is more than trivial orchestration.
 - Public endpoints should be exceptional (`/health`, webhook endpoints that verify their own signatures).
-- Import reusable Clerk request authentication through `@starter/auth/server`; app code owns env wiring and route policy.
+- Import reusable Clerk request authentication through `@punchline-hq/auth/server`; app code owns env wiring and route policy.
 
 ### Database
 

@@ -1,4 +1,4 @@
-import type { CreateRecordInput, DashboardDto, RecordDto } from '@starter/contracts'
+import type { CreateRecordInput, DashboardDto, RecordDto } from '@punchline-hq/contracts'
 
 export type TokenProvider = () => Promise<string | null>
 

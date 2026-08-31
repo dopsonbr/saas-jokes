@@ -1,5 +1,5 @@
 {
-  "name": "@starter/e2e",
+  "name": "@punchline-hq/e2e",
   "version": "0.0.0",
   "private": true,
   "type": "module",

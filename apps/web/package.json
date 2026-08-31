@@ -1,5 +1,5 @@
 {
-  "name": "@starter/web",
+  "name": "@punchline-hq/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,9 +15,9 @@
     "lint": "tsc -b --pretty false"
   },
   "dependencies": {
-    "@starter/api-client": "workspace:*",
-    "@starter/auth": "workspace:*",
-    "@starter/ui": "workspace:*",
+    "@punchline-hq/api-client": "workspace:*",
+    "@punchline-hq/auth": "workspace:*",
+    "@punchline-hq/ui": "workspace:*",
     "@tanstack/react-query": "latest",
     "@tanstack/react-router": "latest",
     "lucide-react": "latest",

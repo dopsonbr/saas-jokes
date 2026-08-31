@@ -1,9 +1,9 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { desc, eq, sql } from 'drizzle-orm'
-import { createRecordInputSchema } from '@starter/contracts'
-import { createDb, schema } from '@starter/db'
-import { createLogger } from '@starter/telemetry'
+import { createRecordInputSchema } from '@punchline-hq/contracts'
+import { createDb, schema } from '@punchline-hq/db'
+import { createLogger } from '@punchline-hq/telemetry'
 import { env } from './env'
 import { requireCustomerAuth } from './auth'
 

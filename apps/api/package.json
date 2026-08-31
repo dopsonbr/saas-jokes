@@ -1,5 +1,5 @@
 {
-  "name": "@starter/api",
+  "name": "@punchline-hq/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@hono/node-server": "latest",
-    "@starter/auth": "workspace:*",
-    "@starter/contracts": "workspace:*",
-    "@starter/db": "workspace:*",
-    "@starter/telemetry": "workspace:*",
+    "@punchline-hq/auth": "workspace:*",
+    "@punchline-hq/contracts": "workspace:*",
+    "@punchline-hq/db": "workspace:*",
+    "@punchline-hq/telemetry": "workspace:*",
     "drizzle-orm": "latest",
     "hono": "latest",
     "zod": "latest"

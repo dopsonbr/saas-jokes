@@ -1,4 +1,4 @@
-# SaaS Cell Starter
+# Punchline HQ
 
 Reusable starter for a B2B SaaS where **each customer gets an isolated React SPA, API deployment, and Neon Postgres project**. Authentication is shared through Clerk; operational telemetry and product analytics can flow to shared destinations.
 
@@ -69,9 +69,9 @@ docs/
 ## Architectural invariants
 
 1. The browser talks to the backend **only through HTTP**.
-2. `apps/web` consumes auth through `@starter/auth/react` and shared components through `@starter/ui`; it must never import `db` or API internals.
+2. `apps/web` consumes auth through `@punchline-hq/auth/react` and shared components through `@punchline-hq/ui`; it must never import `db` or API internals.
 3. `apps/api` is the only application allowed to access `DATABASE_URL`.
-4. Every customer API verifies Clerk authentication **and** the expected Clerk Organization ID through `@starter/auth/server`.
+4. Every customer API verifies Clerk authentication **and** the expected Clerk Organization ID through `@punchline-hq/auth/server`.
 5. Each customer gets its own Neon project and database credentials.
 6. Customer payloads must not be copied into shared telemetry or analytics systems.
 7. Marketing is shared per product; `web + api + db` are isolated per customer.
@@ -108,9 +108,9 @@ pnpm dev
 Or independently:
 
 ```bash
-pnpm --filter @starter/web dev
-pnpm --filter @starter/api dev
-pnpm --filter @starter/marketing dev
+pnpm --filter @punchline-hq/web dev
+pnpm --filter @punchline-hq/api dev
+pnpm --filter @punchline-hq/marketing dev
 ```
 
 Default local URLs:
@@ -122,9 +122,9 @@ Default local URLs:
 ## Database
 
 ```bash
-pnpm --filter @starter/db db:generate
-pnpm --filter @starter/db db:migrate
-pnpm --filter @starter/db db:seed
+pnpm --filter @punchline-hq/db db:generate
+pnpm --filter @punchline-hq/db db:migrate
+pnpm --filter @punchline-hq/db db:seed
 ```
 
 The sample domain is intentionally generic: `records`. Replace it when starting a real product rather than accumulating generic starter abstractions.
@@ -183,6 +183,6 @@ Do **not** create a separate source repo per customer. Customers are separate de
 ## Shared auth and UI packages
 
 - Add reusable shadcn primitives from `apps/web` with `pnpm dlx shadcn@latest add <component> -c apps/web`; the monorepo aliases route UI primitives into `packages/ui`.
-- Browser Clerk usage should import only from `@starter/auth/react`.
-- API Clerk verification should import only from `@starter/auth/server`.
+- Browser Clerk usage should import only from `@punchline-hq/auth/react`.
+- API Clerk verification should import only from `@punchline-hq/auth/server`.
 - App code should not depend directly on `@clerk/react`, `@clerk/backend`, `@clerk/ui`, `class-variance-authority`, `clsx`, or `tailwind-merge` unless an ADR intentionally changes package ownership.

@@ -39,7 +39,7 @@ Populate it with a **Clerk development instance** and **dedicated Neon test data
 Apply migrations before running E2E:
 
 ```bash
-DATABASE_URL='<e2e database url>' pnpm --filter @starter/db db:migrate
+DATABASE_URL='<e2e database url>' pnpm --filter @punchline-hq/db db:migrate
 ```
 
 Install the browser once:

@@ -23,14 +23,14 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'pnpm --filter @starter/api dev:e2e',
+      command: 'pnpm --filter @punchline-hq/api dev:e2e',
       cwd: path.resolve(here, '../..'),
       url: `${apiUrl}/health`,
       reuseExistingServer: true,
       timeout: 120_000,
     },
     {
-      command: 'pnpm --filter @starter/web dev',
+      command: 'pnpm --filter @punchline-hq/web dev',
       cwd: path.resolve(here, '../..'),
       url: webUrl,
       reuseExistingServer: true,

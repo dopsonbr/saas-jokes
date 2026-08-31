@@ -22,9 +22,9 @@ pnpm e2e:web
 Database:
 
 ```bash
-pnpm --filter @starter/db db:generate
-pnpm --filter @starter/db db:migrate
-pnpm --filter @starter/db db:seed
+pnpm --filter @punchline-hq/db db:generate
+pnpm --filter @punchline-hq/db db:migrate
+pnpm --filter @punchline-hq/db db:seed
 ```
 
 ## Adding a feature

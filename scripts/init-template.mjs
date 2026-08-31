@@ -20,9 +20,9 @@ if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
 
 const root = process.cwd()
 const replacements = new Map([
-  ['SaaS Cell Starter', name],
-  ['saas-cell-starter', slug],
-  ['@starter/', `@${slug}/`],
+  ['Punchline HQ', name],
+  ['punchline-hq', slug],
+  ['@punchline-hq/', `@${slug}/`],
 ])
 const ignored = new Set(['node_modules', '.git', 'dist', '.vercel'])
 

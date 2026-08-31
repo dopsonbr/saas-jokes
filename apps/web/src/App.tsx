@@ -1,11 +1,11 @@
 import { type FormEvent, type ReactNode, useState } from 'react'
-import { OrganizationSwitcher, Show, SignInButton, SignUpButton, UserButton, useAuth } from '@starter/auth/react'
+import { OrganizationSwitcher, Show, SignInButton, SignUpButton, UserButton, useAuth } from '@punchline-hq/auth/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Activity, CheckCircle2, Database, Plus, RefreshCw } from 'lucide-react'
-import { createApiClient } from '@starter/api-client'
-import { Button } from '@starter/ui/components/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@starter/ui/components/card'
-import { Input } from '@starter/ui/components/input'
+import { createApiClient } from '@punchline-hq/api-client'
+import { Button } from '@punchline-hq/ui/components/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@punchline-hq/ui/components/card'
+import { Input } from '@punchline-hq/ui/components/input'
 
 const apiUrl = import.meta.env.VITE_API_URL
 if (!apiUrl) throw new Error('Missing VITE_API_URL')

@@ -1,4 +1,4 @@
-import { createCustomerAuthMiddleware } from '@starter/auth/server'
+import { createCustomerAuthMiddleware } from '@punchline-hq/auth/server'
 import { env } from './env'
 
 export const requireCustomerAuth = createCustomerAuthMiddleware({

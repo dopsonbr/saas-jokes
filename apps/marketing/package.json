@@ -1,5 +1,5 @@
 {
-  "name": "@starter/marketing",
+  "name": "@punchline-hq/marketing",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "lint": "tsc -b --pretty false"
   },
   "dependencies": {
-    "@starter/ui": "workspace:*",
+    "@punchline-hq/ui": "workspace:*",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest"

@@ -11,8 +11,8 @@
   },
   "aliases": {
     "components": "#components",
-    "utils": "@starter/ui/lib/utils",
-    "ui": "@starter/ui/components",
+    "utils": "@punchline-hq/ui/lib/utils",
+    "ui": "@punchline-hq/ui/components",
     "lib": "#lib",
     "hooks": "#hooks"
   },
