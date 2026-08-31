@@ -9,9 +9,9 @@ import { createDb } from '@punchline-hq/db'
 import { createLogger } from '@punchline-hq/telemetry'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { requireCustomerAuth } from './auth'
-import { env } from './env'
-import { createJokeService } from './joke-service'
+import { requireCustomerAuth } from './auth.js'
+import { env } from './env.js'
+import { createJokeService } from './joke-service.js'
 
 const app = new Hono<{ Variables: CustomerAuthVariables }>()
 const db = createDb(env.DATABASE_URL)
