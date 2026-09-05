@@ -14,6 +14,7 @@ The `api` Playwright project starts the real local Hono server and verifies over
 - invalid authenticated writes are rejected by contract validation
 - an authenticated member can create, update, publish, publicly read, revoke, and archive a joke
 - lifecycle operations persist through the configured Neon database
+- the authenticated collaborator rejects invalid context and emits a deterministic structured SSE response in mock mode
 
 API tests use Playwright's request client; they do not import API handlers directly.
 
@@ -26,6 +27,7 @@ The browser projects start the real Vite SPA and paired API and verify:
 - the expected Clerk organization is made active
 - the joke portfolio renders data from the API
 - a user can create and edit a joke through UI -> HTTP API -> Neon
+- the dashboard promotes the collaborator and users can review and apply a mock suggestion before saving
 - a user can publish a public link and later revoke it
 - an invalid or revoked public link fails closed without requiring sign-in
 
@@ -68,6 +70,16 @@ E2E_WEB_URL=https://<customer-web-domain> \
 E2E_API_URL=https://<customer-api-domain> \
 pnpm e2e
 ```
+
+Add `E2E_AI_PROVIDER=live` for the production AI smoke test. In that mode the
+collaborator checks require a complete structured stream with no `RUN_ERROR`,
+apply the generated setup and punchline to the form, and continue through the
+persisted joke lifecycle.
+
+To isolate the Vercel Gateway boundary before running the browser suite, run
+`pnpm --filter @punchline-hq/api test:ai:live` with a valid
+`VERCEL_OIDC_TOKEN`. It calls the same TanStack AI service and fails unless
+`openai/gpt-5.6-luna` completes a structured response.
 
 ## Deliberate omissions
 

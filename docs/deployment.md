@@ -35,6 +35,8 @@ vercel deploy --prod --project <project-name>
 - `CLERK_JWT_KEY=...` (recommended; public verification key, server-only config)
 - `EXPECTED_CLERK_ORG_ID=org_...`
 - `CUSTOMER_SLUG=<opaque/non-sensitive slug>`
+- `AI_PROVIDER=mock` for deterministic responses, `vercel-gateway` for keyless Vercel OIDC access, or `openai` for direct OpenAI access
+- `OPENAI_API_KEY=...` **Sensitive** and required only for `AI_PROVIDER=openai`
 
 ## Customer onboarding
 

@@ -13,6 +13,39 @@ const tagsSchema = z
     { message: 'Tags must be unique' },
   )
 
+export const jokeCollaboratorIntentSchema = z.enum([
+  'brainstorm',
+  'sharpen-setup',
+  'punch-up',
+  'alternate-angle',
+  'suggest-tags',
+  'critique',
+  'freeform',
+])
+
+export const jokeDraftSchema = z.object({
+  title: z.string().trim().max(120),
+  setup: z.string().trim().max(500),
+  punchline: z.string().trim().max(500),
+  tags: tagsSchema,
+})
+
+export const jokeSuggestionSchema = jokeDraftSchema
+  .partial()
+  .refine((suggestion) => Object.keys(suggestion).length > 0, {
+    message: 'A suggestion must change at least one field',
+  })
+
+export const jokeCollaboratorContextSchema = z.object({
+  intent: jokeCollaboratorIntentSchema,
+  currentDraft: jokeDraftSchema,
+})
+
+export const jokeCollaboratorResponseSchema = z.object({
+  reply: z.string().trim().min(1).max(800),
+  suggestion: jokeSuggestionSchema.nullable(),
+})
+
 export const jokeSchema = z.object({
   id: jokeIdSchema,
   title: z.string(),
@@ -69,3 +102,14 @@ export type UpdateJokeInput = z.infer<typeof updateJokeInputSchema>
 export type DashboardDto = z.infer<typeof dashboardSchema>
 export type ShareJokeResult = z.infer<typeof shareJokeResultSchema>
 export type PublicJokeDto = z.infer<typeof publicJokeSchema>
+export type JokeCollaboratorIntent = z.infer<
+  typeof jokeCollaboratorIntentSchema
+>
+export type JokeDraft = z.infer<typeof jokeDraftSchema>
+export type JokeSuggestion = z.infer<typeof jokeSuggestionSchema>
+export type JokeCollaboratorContext = z.infer<
+  typeof jokeCollaboratorContextSchema
+>
+export type JokeCollaboratorResponse = z.infer<
+  typeof jokeCollaboratorResponseSchema
+>

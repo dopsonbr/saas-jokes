@@ -9,11 +9,17 @@ import type {
 
 export type {
   CreateJokeInput,
+  JokeCollaboratorContext,
+  JokeCollaboratorIntent,
+  JokeCollaboratorResponse,
+  JokeDraft,
   JokeDto,
   JokeStatus,
+  JokeSuggestion,
   PublicJokeDto,
   UpdateJokeInput,
 } from '@punchline-hq/contracts'
+export { jokeCollaboratorResponseSchema } from '@punchline-hq/contracts'
 
 export type TokenProvider = () => Promise<string | null>
 

@@ -1,4 +1,4 @@
-import type { CreateJokeInput } from '@punchline-hq/api-client'
+import type { CreateJokeInput, JokeSuggestion } from '@punchline-hq/api-client'
 import { Button } from '@punchline-hq/ui/components/button'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from '@tanstack/react-router'
@@ -11,11 +11,44 @@ import {
   Share2,
   Unlink,
 } from 'lucide-react'
-import { useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { JokeForm } from '../components/JokeForm'
 import { StatePanel } from '../components/StatePanel'
 import { StatusBadge } from '../components/StatusBadge'
 import { useApi } from '../lib/api'
+
+const JokeCollaborator = lazy(() =>
+  import('../components/JokeCollaborator').then((module) => ({
+    default: module.JokeCollaborator,
+  })),
+)
+
+function CollaboratorFallback() {
+  return (
+    <div className="grid min-h-72 place-items-center rounded-3xl border border-violet-200 bg-violet-50 text-sm font-medium text-violet-700">
+      Loading collaborator…
+    </div>
+  )
+}
+
+const emptyJoke: CreateJokeInput = {
+  title: '',
+  setup: '',
+  punchline: '',
+  tags: [],
+}
+
+function applySuggestion(
+  current: CreateJokeInput,
+  suggestion: JokeSuggestion,
+): CreateJokeInput {
+  return {
+    title: suggestion.title ?? current.title,
+    setup: suggestion.setup ?? current.setup,
+    punchline: suggestion.punchline ?? current.punchline,
+    tags: suggestion.tags ?? current.tags,
+  }
+}
 
 function EditorHeader({
   title,
@@ -48,6 +81,7 @@ export function NewJokePage() {
   const api = useApi()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [draft, setDraft] = useState<CreateJokeInput>(emptyJoke)
   const create = useMutation({
     mutationFn: api.createJoke,
     onSuccess: async (joke) => {
@@ -63,6 +97,18 @@ export function NewJokePage() {
     <main className="mx-auto max-w-7xl px-5 py-10 lg:px-8 lg:py-14">
       <EditorHeader title="Build a new joke" />
       <JokeForm
+        value={draft}
+        onChange={setDraft}
+        collaborator={
+          <Suspense fallback={<CollaboratorFallback />}>
+            <JokeCollaborator
+              draft={draft}
+              onApply={(suggestion) =>
+                setDraft((current) => applySuggestion(current, suggestion))
+              }
+            />
+          </Suspense>
+        }
         submitLabel="Save draft"
         pending={create.isPending}
         error={create.error?.message}
@@ -78,6 +124,8 @@ export function EditJokePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [copied, setCopied] = useState(false)
+  const [draft, setDraft] = useState<CreateJokeInput>(emptyJoke)
+  const initializedJokeId = useRef<string | null>(null)
   const jokeQuery = useQuery({
     queryKey: ['joke', jokeId],
     queryFn: () => api.joke(jokeId),
@@ -109,6 +157,18 @@ export function EditJokePage() {
       await navigate({ to: '/' })
     },
   })
+
+  useEffect(() => {
+    const joke = jokeQuery.data
+    if (!joke || initializedJokeId.current === joke.id) return
+    initializedJokeId.current = joke.id
+    setDraft({
+      title: joke.title,
+      setup: joke.setup,
+      punchline: joke.punchline,
+      tags: joke.tags,
+    })
+  }, [jokeQuery.data])
 
   if (jokeQuery.isLoading) {
     return (
@@ -204,12 +264,18 @@ export function EditJokePage() {
         </p>
       ) : null}
       <JokeForm
-        initialValue={{
-          title: joke.title,
-          setup: joke.setup,
-          punchline: joke.punchline,
-          tags: joke.tags,
-        }}
+        value={draft}
+        onChange={setDraft}
+        collaborator={
+          <Suspense fallback={<CollaboratorFallback />}>
+            <JokeCollaborator
+              draft={draft}
+              onApply={(suggestion: JokeSuggestion) =>
+                setDraft((current) => applySuggestion(current, suggestion))
+              }
+            />
+          </Suspense>
+        }
         submitLabel="Save changes"
         pending={update.isPending}
         error={update.error?.message}

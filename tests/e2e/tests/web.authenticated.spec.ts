@@ -9,7 +9,33 @@ test('organization member can create, edit, publish, and revoke a joke', async (
     page.getByRole('heading', { name: 'Joke portfolio' }),
   ).toBeVisible()
 
-  await page.getByRole('link', { name: 'New joke' }).click()
+  await page.getByRole('link', { name: 'Create with AI' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Joke collaborator' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Brainstorm' }).click()
+  const suggestion = page.getByText('Suggested edit')
+  const collaboratorError = page.getByRole('alert')
+  await expect(suggestion.or(collaboratorError)).toBeVisible({
+    timeout: 45_000,
+  })
+  await expect(collaboratorError).toHaveCount(0)
+  await expect(
+    page
+      .locator('[aria-live="polite"] p')
+      .filter({ hasText: /"suggestion"\s*:/ }),
+  ).toHaveCount(0)
+  await page.getByRole('button', { name: 'Apply all' }).click()
+  if (process.env.E2E_AI_PROVIDER === 'live') {
+    await expect(page.getByLabel('Setup')).toHaveValue(/\S+/)
+    await expect(
+      page.getByRole('textbox', { name: 'Punchline', exact: true }),
+    ).toHaveValue(/\S+/)
+  } else {
+    await expect(page.getByLabel('Setup')).toHaveValue(
+      'Why did the quarterly planning meeting bring a compass?',
+    )
+  }
   await page.getByLabel('Internal title').fill(title)
   await page.getByLabel('Setup').fill('Why did the browser open a new tab?')
   await page

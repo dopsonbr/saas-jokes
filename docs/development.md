@@ -8,6 +8,8 @@
 
 Use a dedicated Neon development branch/project and Clerk development instance. Local development may represent one synthetic customer cell.
 
+The joke collaborator defaults to `AI_PROVIDER=mock`, which exercises the authenticated TanStack AI stream with deterministic responses. For local live AI, set `AI_PROVIDER=vercel-gateway` and add a server-only `AI_GATEWAY_API_KEY` to `apps/api/.env.local`. On Vercel, the same provider uses the automatically injected OIDC token and model `openai/gpt-5.6-luna`, so an API key does not need to be copied into the deployment. Alternatively, set `AI_PROVIDER=openai` and inject a server-only `OPENAI_API_KEY` to call `gpt-5.6-luna` directly.
+
 ## Commands
 
 ```bash

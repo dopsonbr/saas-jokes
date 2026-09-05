@@ -7,6 +7,7 @@
     "dev": "vercel dev --listen 3001",
     "dev:e2e": "tsx src/dev.ts",
     "build": "pnpm --filter @punchline-hq/contracts build && pnpm --filter @punchline-hq/auth build && pnpm --filter @punchline-hq/db build && pnpm --filter @punchline-hq/telemetry build && tsc -p tsconfig.json --noEmit",
+    "test:ai:live": "tsx src/live-ai-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit"
   },
@@ -16,6 +17,9 @@
     "@punchline-hq/contracts": "workspace:*",
     "@punchline-hq/db": "workspace:*",
     "@punchline-hq/telemetry": "workspace:*",
+    "@tanstack/ai": "0.52.0",
+    "@tanstack/ai-openai": "0.22.3",
+    "@tanstack/ai-vercel-gateway": "0.2.5",
     "drizzle-orm": "latest",
     "hono": "latest",
     "zod": "latest"

@@ -27,6 +27,7 @@ Keep these out of browser bundles because they configure server behavior, but th
 - `EXPECTED_CLERK_ORG_ID`
 - `FRONTEND_URL`
 - `CUSTOMER_SLUG`
+- `AI_PROVIDER` (`mock`, `vercel-gateway`, or `openai`)
 
 ### Confidential values
 
@@ -34,6 +35,9 @@ Treat these as secrets:
 
 - `DATABASE_URL`
 - `CLERK_SECRET_KEY`
+- `AI_GATEWAY_API_KEY` for local or non-Vercel use of `vercel-gateway`
+- `OPENAI_API_KEY` when the live joke collaborator is enabled
+- `VERCEL_OIDC_TOKEN` is injected automatically by Vercel for `vercel-gateway`; do not create or commit a static copy
 - telemetry/exporter auth headers or tokens
 - third-party API keys introduced by product features
 

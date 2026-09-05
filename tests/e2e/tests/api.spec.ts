@@ -36,6 +36,25 @@ test('health is public and the joke API requires authentication', async ({
   expect(protectedResponse.status).toBe(401)
 })
 
+test('collaborator preflight permits the TanStack AI run header', async ({
+  request,
+}) => {
+  const webOrigin = process.env.E2E_WEB_URL ?? 'http://localhost:3100'
+  const response = await request.fetch(`${apiUrl}/v1/ai/joke-collaborator`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: webOrigin,
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'authorization,content-type,x-run-id',
+    },
+  })
+
+  expect(response.status()).toBe(204)
+  expect(response.headers()['access-control-allow-origin']).toBe(webOrigin)
+  const allowHeaders = response.headers()['access-control-allow-headers'] ?? ''
+  expect(allowHeaders.toLowerCase()).toContain('x-run-id')
+})
+
 test('wrong organization receives 403', async ({ page, request }) => {
   const wrongOrgId = process.env.E2E_WRONG_CLERK_ORG_ID
   if (!wrongOrgId) throw new Error('E2E requires E2E_WRONG_CLERK_ORG_ID')
@@ -74,6 +93,63 @@ test('wrong organization receives 403', async ({ page, request }) => {
     if (!clerkClient) throw new Error('Clerk did not load')
     await clerkClient.setActive({ organization })
   }, expectedOrgId)
+})
+
+test('authenticated collaborator streams a complete structured suggestion', async ({
+  page,
+  request,
+}) => {
+  const token = await getFreshSessionToken(page)
+  const response = await request.post(`${apiUrl}/v1/ai/joke-collaborator`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+    data: {
+      threadId: 'e2e-collaborator-thread',
+      runId: `run-${Date.now()}`,
+      state: {},
+      messages: [
+        {
+          id: 'message-1',
+          role: 'user',
+          content: 'roadmap planning',
+        },
+      ],
+      tools: [],
+      context: [],
+      forwardedProps: {
+        intent: 'brainstorm',
+        currentDraft: { title: '', setup: '', punchline: '', tags: [] },
+      },
+    },
+  })
+
+  expect(response.status()).toBe(200)
+  expect(response.headers()['content-type']).toContain('text/event-stream')
+  const stream = await response.text()
+  expect(stream).not.toContain('RUN_ERROR')
+  expect(stream).toContain('structured-output.complete')
+  if (process.env.E2E_AI_PROVIDER !== 'live') {
+    expect(stream).toContain('Because everyone kept asking for more direction.')
+  }
+
+  const invalid = await request.post(`${apiUrl}/v1/ai/joke-collaborator`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+    data: {
+      threadId: 'invalid-thread',
+      runId: 'invalid-run',
+      state: {},
+      messages: [],
+      tools: [],
+      context: [],
+      forwardedProps: { intent: 'invented', currentDraft: {} },
+    },
+  })
+  expect(invalid.status()).toBe(400)
 })
 
 test('authenticated lifecycle persists and revokes a public joke', async ({

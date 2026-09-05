@@ -19,6 +19,7 @@
     "@punchline-hq/api-client": "workspace:*",
     "@punchline-hq/auth": "workspace:*",
     "@punchline-hq/ui": "workspace:*",
+    "@tanstack/ai-react": "0.22.4",
     "@tanstack/react-query": "latest",
     "@tanstack/react-router": "latest",
     "lucide-react": "latest",

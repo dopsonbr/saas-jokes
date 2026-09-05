@@ -11,6 +11,7 @@ Marketing, social, sales, and internal-communications teams collaborating inside
 ## Jobs to be done
 
 - When I have a joke idea, I want a structured place to draft the setup and punchline so the team can refine it.
+- When a joke needs another angle, I want an interactive collaborator that proposes edits without taking control of my draft.
 - When the joke is ready, I want an unlisted link so I can share it outside the workspace.
 - When the moment passes, I want to revoke the link without losing the private draft or audit context.
 
@@ -27,7 +28,8 @@ Marketing, social, sales, and internal-communications teams collaborating inside
 - Published jokes have revocable, unlisted public URLs.
 - Signed-out visitors can read only the published joke DTO.
 - Marketing clearly explains the workflow and isolated-cell architecture.
+- Members can brainstorm, critique, and refine drafts with an AI collaborator while retaining explicit control over every applied change.
 
 ## Non-goals
 
-- AI generation, billing, moderation, role-specific publishing, public discovery, custom domains, analytics vendors, and fleet automation.
+- Billing, automated moderation, role-specific publishing, public discovery, custom domains, analytics vendors, durable AI conversation history, and fleet automation.

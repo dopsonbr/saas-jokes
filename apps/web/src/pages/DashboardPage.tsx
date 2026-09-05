@@ -11,6 +11,8 @@ import {
   Plus,
   Search,
   Share2,
+  Sparkles,
+  WandSparkles,
 } from 'lucide-react'
 import { useDeferredValue, useState } from 'react'
 import { StatePanel } from '../components/StatePanel'
@@ -90,6 +92,40 @@ export function DashboardPage() {
           <Plus className="mr-2 h-4 w-4" /> New joke
         </Link>
       </div>
+
+      <section className="relative mt-9 overflow-hidden rounded-3xl bg-slate-950 px-6 py-7 text-white shadow-2xl shadow-violet-200/60 sm:px-8">
+        <div className="absolute -right-12 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-500 text-white shadow-lg shadow-violet-950/40">
+              <WandSparkles className="h-6 w-6" />
+            </span>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-200">
+                  New collaborative workspace
+                </p>
+                <Badge className="border-amber-300/30 bg-amber-300/10 text-amber-100">
+                  AI collaborator
+                </Badge>
+              </div>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight">
+                Build the joke with a creative partner.
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+                Brainstorm an angle, sharpen the setup, and review punchline
+                options without surrendering the final edit.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/jokes/new"
+            className="inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-white px-5 text-sm font-semibold text-slate-950 transition hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/50"
+          >
+            <Sparkles className="mr-2 h-4 w-4 text-violet-600" /> Create with AI
+          </Link>
+        </div>
+      </section>
 
       <section
         className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
